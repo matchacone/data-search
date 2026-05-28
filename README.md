@@ -8,8 +8,12 @@ Update logs:
 
 5/28/2026
 - Scrapy Initialized (Crawler)
+- US Gov data set spider working
+
 
 WIP:
 - Crawler
+    - Try kaggle
+    - look for more data sites to crawl
 - Frontend
 - Django    

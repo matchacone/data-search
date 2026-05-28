@@ -10,7 +10,6 @@ class DatasetEngineItem(scrapy.Item):
     title = scrapy.Field()
     description = scrapy.Field()
     source_url = scrapy.Field()
-    download_url = scrapy.Field()
-    file_formats = scrapy.Field()  # e.g., CSV, JSON, PDF
+    resources = scrapy.Field()
     tags = scrapy.Field()
     pass
