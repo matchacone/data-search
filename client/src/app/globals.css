@@ -24,3 +24,19 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.dot-grid-bg {
+  background-color: #ffffff;
+  /* The first color is the dot color and size (1px), the second is the background */
+  background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+  /* This dictates the spacing between the dots */
+  background-size: 24px 24px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dot-grid-bg {
+    background-color: #0a0a0a;
+    background-image: radial-gradient(#374151 1px, transparent 1px);
+  }
+}
