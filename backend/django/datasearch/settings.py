@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'searchEngine',
 ]
 
 MIDDLEWARE = [
@@ -68,15 +69,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'datasearch.wsgi.application'
 
+import os
+import dj_database_url
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=0,  # for vercel
+        conn_health_checks=True,
+    )
 }
 
 

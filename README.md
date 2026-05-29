@@ -9,7 +9,11 @@ Update logs:
 5/28/2026
 - Scrapy Initialized (Crawler)
 
+5/29/2026
+- Worked on backend
+    - Connected Supabase to Django
+
 WIP:
 - Crawler
 - Frontend
-- Django    
+- Django
