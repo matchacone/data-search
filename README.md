@@ -10,6 +10,9 @@ Update logs:
 - Scrapy Initialized (Crawler)
 - US Gov data set spider working
 
+5/29/2026
+- Europa scraped thru API
+
 
 WIP:
 - Crawler
