@@ -8,6 +8,13 @@ Update logs:
 
 5/28/2026
 - Scrapy Initialized (Crawler)
+- US Gov data set spider working
+
+5/29/2026
+- Europa scraped thru API
+
+5/31/2026
+- fetching datasets from kaggle thru API 
 
 5/29/2026
 - Worked on backend
@@ -15,5 +22,9 @@ Update logs:
 
 WIP:
 - Crawler
+    - Try kaggle
+    - look for more data sites to crawl
+    - Loop Europa scraper to scrape thru everything
+    - loop thru kaggle API fetching
 - Frontend
 - Django

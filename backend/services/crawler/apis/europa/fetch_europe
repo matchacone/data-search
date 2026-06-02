@@ -1,0 +1,118 @@
+import requests
+import json
+from collections import defaultdict
+
+def standardize_data(raw_sparql_json):
+    """
+    The Crosswalk: Converts flat SPARQL rows into unified Engine-ready objects.
+    """
+    grouped_data = defaultdict(lambda: {
+        'title': '',
+        'description': '',
+        'tags': set(),
+        'resources': {}
+    })
+    
+    rows = raw_sparql_json.get('results', {}).get('bindings', [])
+    
+    for row in rows:
+        dataset_url = row['dataset']['value']
+        
+        # Extract fields safely
+        title = row.get('title', {}).get('value', 'Untitled Dataset')
+        description = row.get('description', {}).get('value', 'No description available.')
+        keyword = row.get('keyword', {}).get('value', None)
+        download_url = row.get('downloadUrl', {}).get('value', None)
+        raw_format = row.get('format', {}).get('value', '').split('/')[-1].upper()
+        
+        # Only set text if it hasn't been set yet to prevent overwriting
+        if not grouped_data[dataset_url]['title'] or grouped_data[dataset_url]['title'] == 'Untitled Dataset':
+            grouped_data[dataset_url]['title'] = title
+            
+        if not grouped_data[dataset_url]['description'] or grouped_data[dataset_url]['description'] == 'No description available.':
+            grouped_data[dataset_url]['description'] = description
+        
+        # Add tags (Sets naturally handle duplicates)
+        if keyword:
+            grouped_data[dataset_url]['tags'].add(keyword.lower())
+            
+        # Add file distributions
+        if download_url:
+            file_name = download_url.split('/')[-1] or f"data_file.{raw_format.lower()}"
+            grouped_data[dataset_url]['resources'][download_url] = {
+                'name': file_name,
+                'format': raw_format,
+                'url': download_url
+            }
+            
+    # Convert our working dictionary into the final clean list
+    final_records = []
+    for source_url, data in grouped_data.items():
+        record = {
+            'title': data['title'],
+            'description': data['description'],
+            'source_url': source_url,
+            'tags': list(data['tags']), # Convert set back to list for JSON serialization
+            'resources': list(data['resources'].values())
+        }
+        final_records.append(record)
+        
+    return final_records
+
+
+def fetch_europe_data():
+    url = "https://data.europa.eu/sparql"
+    
+    # We use the full query now to get keywords and descriptions
+    query = """
+    PREFIX dcat: <http://www.w3.org/ns/dcat#>
+    PREFIX dct: <http://purl.org/dc/terms/>
+
+    SELECT ?dataset ?title ?description ?keyword ?downloadUrl ?format
+    WHERE {
+      {
+        SELECT DISTINCT ?dataset 
+        WHERE {
+          ?dataset a dcat:Dataset .
+          ?dataset dcat:distribution ?dist .
+          ?dist dct:format ?fmt .
+          FILTER (regex(str(?fmt), "csv|zip|json|tsv", "i"))
+        }
+        LIMIT 100
+        OFFSET 0
+      }
+      ?dataset dct:title ?title .
+      OPTIONAL { ?dataset dct:description ?description . }
+      OPTIONAL { ?dataset dcat:keyword ?keyword . }
+      ?dataset dcat:distribution ?distribution .
+      ?distribution dcat:downloadURL ?downloadUrl .
+      ?distribution dct:format ?format .
+      FILTER (regex(str(?format), "csv|zip|json|tsv", "i"))
+    }
+    """
+    
+    headers = {"Accept": "application/sparql-results+json"}
+    
+    print("🚀 Firing request...")
+    response = requests.post(url, data={'query': query}, headers=headers)
+    
+    if response.status_code == 200:
+        raw_data = response.json()
+        print("✅ Data received. Running it through the Crosswalk...")
+        
+        # Standardize the data!
+        clean_records = standardize_data(raw_data)
+        
+        print(f"🧹 Successfully cleaned and grouped into {len(clean_records)} unique datasets.")
+        
+        # Save the beautiful, standardized data to disk
+        with open('engine_ready_output.json', 'w') as f:
+            json.dump(clean_records, f, indent=2)
+            
+        print("📁 Saved to engine_ready_output.json")
+    else:
+        print(f"❌ Failed: HTTP {response.status_code}")
+        print(response.text)
+
+if __name__ == "__main__":
+    fetch_europe_data()
