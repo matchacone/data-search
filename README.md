@@ -20,11 +20,17 @@ Update logs:
 - Worked on backend
     - Connected Supabase to Django
 
+6/11/2026
+- Scraped 1000 datasets from kaggle
+- Models made in Supabase
+
 WIP:
 - Crawler
     - Try kaggle
     - look for more data sites to crawl
     - Loop Europa scraper to scrape thru everything
     - loop thru kaggle API fetching
+    - FIX THE CRAWLERS PLESSS BUT DO IT LAST
+- Backend logic
 - Frontend
 - Django
