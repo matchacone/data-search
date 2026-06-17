@@ -7,29 +7,49 @@ export default function InteractiveDotGrid() {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    // Calculate mouse position relative to the container
     const { left, top } = e.currentTarget.getBoundingClientRect();
     setMousePos({ x: e.clientX - left, y: e.clientY - top });
   };
 
   return (
     <div
-      className="absolute inset-0 z-0 overflow-hidden bg-white dark:bg-zinc-950"
+      className="absolute inset-0 z-0 overflow-hidden"
+      style={{ backgroundColor: "oklch(0.141 0.005 285.823)" }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* 1. Base static grid (Subtle) */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#374151_1px,transparent_1px)] [background-size:24px_24px]" />
-
-      {/* 2. Interactive spotlight grid (Brighter) */}
+      {/* Base static dot grid */}
       <div
-        className="absolute inset-0 bg-[radial-gradient(#9ca3af_1px,transparent_1px)] dark:bg-[radial-gradient(#9ca3af_1px,transparent_1px)] [background-size:24px_24px] transition-opacity duration-300"
         style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "radial-gradient(oklch(0.28 0.006 285) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      {/* Cyan-tinted spotlight layer */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "radial-gradient(oklch(0.65 0.18 200 / 0.7) 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
           opacity: isHovered ? 1 : 0,
-          // This creates a circular cutout revealing the brighter dots beneath
-          maskImage: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, black, transparent)`,
-          WebkitMaskImage: `radial-gradient(300px circle at ${mousePos.x}px ${mousePos.y}px, black, transparent)`,
+          transition: "opacity 300ms ease",
+          maskImage: `radial-gradient(350px circle at ${mousePos.x}px ${mousePos.y}px, black, transparent)`,
+          WebkitMaskImage: `radial-gradient(350px circle at ${mousePos.x}px ${mousePos.y}px, black, transparent)`,
+        }}
+      />
+
+      {/* Radial vignette — darkens edges so content pops */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "radial-gradient(ellipse 80% 60% at 50% 40%, transparent 30%, oklch(0.141 0.005 285.823 / 0.7) 100%)",
+          pointerEvents: "none",
         }}
       />
     </div>
